@@ -23,7 +23,7 @@ public class Business extends Model<Business> {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private Long customerId;
+    private String customerId;
     /**
      * 公司名
      */
@@ -77,11 +77,11 @@ public class Business extends Model<Business> {
         this.id = id;
     }
 
-    public Long getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 

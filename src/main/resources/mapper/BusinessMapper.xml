@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.BusinessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Business">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="name" property="name" />
+        <result column="simple_name" property="simpleName" />
+        <result column="juridical" property="juridical" />
+        <result column="phone" property="phone" />
+        <result column="mobile" property="mobile" />
+        <result column="address" property="address" />
+        <result column="images" property="images" />
+        <result column="module_id" property="moduleId" />
+        <result column="status" property="status" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="vip_end_time" property="vipEndTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, name, simple_name, juridical, phone, mobile, address, images, module_id, status, deleted, create_time, update_time,vip_end_time
+    </sql>
+
+</mapper>

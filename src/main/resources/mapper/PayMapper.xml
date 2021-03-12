@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.PayMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Pay">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="price" property="price" />
+        <result column="out_trade_no" property="outTradeNo" />
+        <result column="type" property="type" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="deleted" property="deleted" />
+        <result column="original_coin" property="originalCoin" />
+        <result column="increase_coin" property="increaseCoin" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, price, out_trade_no, type, create_time, update_time, status, deleted, original_coin,increase_coin
+    </sql>
+
+</mapper>

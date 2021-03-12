@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.ExhibitionBoothMapper">
+    <select id="listExhibitionBooth" resultType="com.ttm.pet.model.vo.app.ExhibitionBoothVo">
+        SELECT
+            id,
+            booth_region,
+            booth_code,
+            booth_size,
+            booth_price,
+            booth_status
+        FROM t_exhibition_booth
+        WHERE exhibition_id = #{exhibitionId}
+    </select>
+
+    <select id="getExhibitionBooth" resultType="com.ttm.pet.model.vo.app.ExhibitionBoothDetailVo">
+        SELECT
+            t1.id,
+            t2.exhibition_title,
+            t1.booth_code,
+            t1.booth_size,
+            t1.booth_price,
+            t2.exhibition_address,
+            t2.exhibition_start_time,
+            t2.exhibition_end_time,
+            t2.customer_telephone1,
+            t2.customer_telephone2
+        FROM
+            t_exhibition_booth t1
+        LEFT JOIN t_exhibition t2 ON t1.exhibition_id = t2.id
+        WHERE
+            t1.id = #{exhibitionBoothId}
+    </select>
+
+    <!--修改展位是否出售-->
+    <update id="updateBoothStatus">
+        UPDATE t_exhibition_booth
+        SET booth_status = '1',
+            operation_date = NOW()
+        WHERE id = #{boothId}
+    </update>
+
+    <select id="getBoothStatus" resultType="java.lang.String">
+        SELECT booth_status
+        FROM t_exhibition_booth
+        WHERE id = #{boothId}
+    </select>
+</mapper>

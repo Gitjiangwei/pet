@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Customer">
+        <id column="id" property="id" />
+        <result column="uuid" property="uuid" />
+        <result column="pet_number" property="petNumber" />
+        <result column="name" property="name" />
+        <result column="mobile" property="mobile" />
+        <result column="show_mobile" property="showMobile" />
+        <result column="is_show_mobile" property="isShowMobile" />
+        <result column="password" property="password" />
+        <result column="gender" property="gender" />
+        <result column="age" property="age" />
+        <result column="portrait" property="portrait" />
+        <result column="wx_union_id" property="wxUnionId" />
+        <result column="wx_number" property="wxNumber" />
+        <result column="is_show_wx" property="isShowWx" />
+        <result column="profile" property="profile" />
+        <result column="city_id" property="cityId" />
+        <result column="city_name" property="cityName" />
+        <result column="back_img" property="backImg" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="is_partnership" property="isPartnership" />
+        <result column="deleted" property="deleted" />
+        <result column="wx_number" property="wxNumber" />
+        <result column="pet_coin" property="petCoin" />
+        <result column="open_id" property="openId" />
+        <result column="is_business" property="isBusiness" />
+        <result column="sum_food" property="sumFood" />
+        <result column="food" property="food" />
+        <result column="is_base" property="isBase" />
+        <result column="base_describe" property="baseDescribe" />
+        <result column="is_verified" property="isVerified" />
+        <result column="verified_name" property="verifiedName" />
+        <result column="is_adopted" property="isAdopted" />
+        <result column="account" property="account" />
+        <result column="real_name" property="realName" />
+        <result column="is_mini" property="isMini" />
+        <result column="address" property="address" />
+        <result column="send_food" property="sendFood" />
+        <result column="rate" property="rate" />
+        <result column="h_open_id" property="hOpenId" />
+        <result column="is_works_adopt" property="isWorksAdopt" />
+        <result column="is_works_support" property="isWorksSupport" />
+        <result column="identity_token" property="identityToken" />
+        <result column="business_name" property="businessName" />
+        <result column="vip_start_time" property="vipStartTime" />
+        <result column="vip_end_time" property="vipEndTime" />
+        <result column="module_id" property="moduleId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, uuid, pet_number, name, mobile, show_mobile, is_show_mobile, password, gender, age, portrait, city_id,  city_name, open_id, wxUnionId, wx_number, is_show_wx, profile, back_img, remark, create_time, is_partnership, deleted, pet_coin,account,real_name,is_mini,send_food,
+        is_business,sum_food,food,is_base,base_describe,is_verified,verified_name,is_adopted,address, rate, h_open_id,is_works_adopt,is_works_support,identity_token,business_name,vip_start_time,vip_end_time,module_id
+    </sql>
+
+    <select id="queryCustomersBySearch" resultType="com.ttm.pet.model.vo.app.CustomerSearchVo">
+        select c.uuid customerId,c.portrait,c.`name` customerName
+        <if test="customerId != null and customerId != ''">
+            , IF(cr.id IS NULL,0,1) isFans, cr.is_adopt isAdopt
+        </if>
+        from t_customer c
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_relation cr on c.uuid = cr.to_customer_id and cr.from_customer_id = #{customerId} and cr.deleted = 0
+        </if>
+        where c.`name` like concat('%',#{keyWord},'%') or c.pet_number = #{keyWord} or c.mobile = #{keyWord}
+    </select>
+
+    <select id="queryCustomerLeleVos" resultType="com.ttm.pet.model.vo.app.CustomerLeleVo">
+        SELECT c.uuid customerId,c.portrait,c.`name` customerName
+        FROM t_customer c
+        JOIN t_works w on c.uuid = w.customer_id and w.deleted = 0 or w.deleted = 2
+        WHERE c.deleted = 0
+        GROUP BY c.id
+        ORDER BY w.create_time DESC
+        LIMIT 25
+    </select>
+
+    <select id="queryBaseListVos" resultType="com.ttm.pet.model.vo.app.BaseListVo">
+        select c.uuid customerId,c.`name`,c.portrait, sum(cd.food) donatedFood,b.like_target likeTarget,b.id,b.buy_finished buyFinished,b.give_finished giveFinished
+        from t_customer c
+        join t_base b on c.uuid = b.customer_id and b.deleted = 0
+        left join t_customer_donate cd on c.uuid = cd.base_customer_id and cd.deleted = 0
+        where c.is_base = 1 and c.deleted = 0 and b.type = 1
+        <if test="name != null and name != ''">
+            and c.`name` like concat('%',#{name},'%')
+        </if>
+        group by c.id
+    </select>
+
+    <select id="queryBaseCount" resultType="java.lang.Integer">
+        select count(*)
+        from t_customer c
+        join t_base b on c.uuid = b.customer_id and b.deleted = 0
+        where c.is_base = 1 and c.deleted = 0 and b.type = #{type}
+    </select>
+
+    <select id="queryModuleCustomerVos" resultType="com.ttm.pet.model.vo.app.CustomerLeleVo">
+        select c.uuid customerId,c.`name` customerName ,c.portrait
+        from t_customer c,
+        (select customer_ids from t_module where id = #{moduleId} and deleted = 0) a
+        where c.deleted = 0 and FIND_IN_SET( c.id , a.customer_ids)
+        order by FIND_IN_SET( c.id , a.customer_ids)
+    </select>
+</mapper>

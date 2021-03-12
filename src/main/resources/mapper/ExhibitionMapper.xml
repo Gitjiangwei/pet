@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.ExhibitionMapper">
+
+    <select id="listExhibition" resultType="com.ttm.pet.model.vo.app.ExhibitionVo">
+        SELECT id,
+            exhibition_title,
+            cover_title,
+            cover_image,
+            exhibition_start_time,
+            exhibition_end_time,
+            registration_deadline
+        FROM t_exhibition
+        WHERE exhibition_status = 1
+        ORDER BY exhibition_sort,exhibition_start_time
+    </select>
+</mapper>

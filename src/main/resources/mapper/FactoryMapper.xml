@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.FactoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Factory">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="name" property="name" />
+        <result column="gift_name" property="giftName" />
+        <result column="gift_simple_name" property="giftSimpleName" />
+        <result column="gift_number" property="giftNumber" />
+        <result column="gift_img" property="giftImg" />
+        <result column="draw_title" property="drawTitle" />
+        <result column="draw_content" property="drawContent" />
+        <result column="draw_img" property="drawImg" />
+        <result column="draw_link" property="drawLink" />
+        <result column="create_time" property="createTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, name, gift_name, gift_simple_name, gift_number, gift_img, draw_title, draw_content, draw_img, draw_link, create_time, deleted
+    </sql>
+    <select id="queryFactoryListVos" resultType="com.ttm.pet.model.vo.app.FactoryListVo">
+        select f.id,f.customer_id customerId,c.portrait,f.`name`,f.gift_name giftName,f.gift_simple_name giftSimpleName, f.gift_number giftNumber,f.gift_img giftImg,ifnull(cd.count,0) sumDrawCount
+        from t_factory f
+        join t_customer c on c.uuid = f.customer_id and c.deleted = 0
+        left join (select count(id) count,factory_id from t_customer_draw where deleted = 0 group by factory_id) cd on f.id = cd.factory_id
+        where f.deleted = 0
+        order by f.gift_number desc
+    </select>
+
+</mapper>

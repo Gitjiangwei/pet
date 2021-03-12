@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.VipOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.VipOrder">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="price" property="price" />
+        <result column="original_end_time" property="originalEndTime" />
+        <result column="now_end_time" property="nowEndTime" />
+        <result column="years" property="years" />
+        <result column="out_trade_no" property="outTradeNo" />
+        <result column="type" property="type" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, price, original_end_time, now_end_time, years, out_trade_no, type, create_time, update_time, status, deleted
+    </sql>
+
+</mapper>

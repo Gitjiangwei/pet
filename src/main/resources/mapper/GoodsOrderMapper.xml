@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.GoodsOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.GoodsOrder">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="base_customer_id" property="baseCustomerId" />
+        <result column="price" property="price" />
+        <result column="weight" property="weight" />
+        <result column="out_trade_no" property="outTradeNo" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, base_customer_id, price, weight, out_trade_no, create_time, update_time, status, deleted
+    </sql>
+    <select id="querySupportListVos" resultType="com.ttm.pet.model.vo.app.SupportListVo">
+        select c.`name`,c.portrait,UNIX_TIMESTAMP(go.update_time) updateTime,go.weight,go.price
+        from t_goods_order go
+        join t_customer c on go.customer_id = c.uuid
+        where c.deleted = 0 and go.deleted = 0 and go.`status` = 2 and go.type = #{type} and go.base_customer_id = #{customerId}
+        order by go.update_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.SysSortCodeMapper">
+    <!--获取统一编码列表-->
+    <select id="listSysSortCode" resultType="com.ttm.pet.model.vo.app.SysSortCodeVo">
+         SELECT
+            item_value,
+            item_name
+        FROM
+            sys_code_sort_item
+        WHERE
+            code_sort_id = #{codeSortId}
+        ORDER BY item_sort
+    </select>
+</mapper>

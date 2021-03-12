@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CustomerBaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Base">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="images" property="images" />
+        <result column="content" property="content" />
+        <result column="extra" property="extra" />
+        <result column="goods_img" property="goodsImg" />
+        <result column="goods_price" property="goodsPrice" />
+        <result column="goods_weight" property="goodsWeight" />
+        <result column="target" property="target" />
+        <result column="subsidy" property="subsidy" />
+        <result column="address" property="address" />
+        <result column="remark" property="remark" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="like_target" property="likeTarget" />
+        <result column="faqi_name" property="faqiName" />
+        <result column="receive_name" property="receiveName" />
+        <result column="share_title" property="shareTitle" />
+        <result column="share_img" property="shareImg" />
+        <result column="buy_finished" property="buyFinished" />
+        <result column="give_finished" property="giveFinished" />
+        <result column="money_finished" property="moneyFinished" />
+        <result column="finish_money_time" property="finishMoneyTime" />
+        <result column="type" property="type" />
+        <result column="target_money" property="targetMoney" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, images, content, extra, goods_img, goods_price, goods_weight, target, subsidy, address, remark, deleted, create_time, like_target,faqi_name, receive_name, share_title, share_img, buy_finished,give_finished,type,money_finished,finish_money_time,target_money
+    </sql>
+    <select id="queryBaseDetailVo" resultType="com.ttm.pet.model.vo.app.BaseDetailVo">
+       select c.uuid customerId,c.`name`,c.portrait,b.images,b.content,b.extra,b.goods_img goodsImg,b.goods_price goodsPrice,b.share_title shareTitle,b.share_img shareImg,
+			 b.subsidy,b.target,b.address,b.remark,count(go.id) supporterNum,IFNULL(sum( go.weight ),0) bought,b.faqi_name faqiName,b.receive_name receiveName,b.id
+       from t_customer c
+       join t_base b on c.uuid = b.customer_id
+       left join t_goods_order go on c.uuid = go.base_customer_id and go.`status`=2 and go.deleted = 0 and go.type = 1
+       where c.deleted = 0 and b.deleted = 0 and c.is_base = 1 and b.type = 1 and b.id = #{customerId}
+    </select>
+
+    <select id="queryBaseDetailMoneyVo" resultType="com.ttm.pet.model.vo.app.BaseDetailMoneyVo">
+       select c.uuid customerId,c.`name`,c.portrait,b.images,b.content,b.extra,b.share_title shareTitle,b.share_img shareImg,b.target_money targetMoney,b.money_finished moneyFinished,b.finish_money_time finishMoneyTimes,
+			 b.address,b.remark,count(go.id) supporterNum,IFNULL(sum( go.weight ),0) bought,b.faqi_name faqiName,b.receive_name receiveName,b.id,IFNULL(sum( go.price ),0) sumMoney
+       from t_customer c
+       join t_base b on c.uuid = b.customer_id
+       left join t_goods_order go on c.uuid = go.base_customer_id and go.`status`=2 and go.deleted = 0 and go.type = 2
+       where c.deleted = 0 and b.deleted = 0 and c.is_base = 1 and b.type = 2 and b.id = #{customerId}
+    </select>
+
+    <select id="queryBaseListH5Vos" resultType="com.ttm.pet.model.vo.app.BaseListH5Vo">
+        select c.uuid customerId,c.`name`,c.portrait,b.subsidy,b.target,IFNULL(sum(go.weight),0)/b.target ratio,b.id,b.buy_finished buyFinished
+        from t_customer c
+        join t_base b on c.uuid = b.customer_id
+        left join t_goods_order go on c.uuid = go.base_customer_id and go.`status`=2 and go.deleted = 0 and go.type = 1
+        where c.deleted = 0 and b.deleted = 0 and c.is_base = 1 and b.type = 1
+        <if test="name != null and name != ''">
+            and c.`name` like concat('%',#{name},'%')
+        </if>
+        group by c.id
+        order by ratio desc
+    </select>
+
+    <select id="queryBaseListH5ByMoneyVos" resultType="com.ttm.pet.model.vo.app.BaseListH5Vo">
+        select c.uuid customerId,c.`name`,c.portrait,b.target_money target,IFNULL(sum(go.price),0)/b.target_money ratio,b.id,b.buy_finished buyFinished
+        from t_customer c
+        join t_base b on c.uuid = b.customer_id
+        left join t_goods_order go on c.uuid = go.base_customer_id and go.`status`=2 and go.deleted = 0 and go.type = 2
+        where c.deleted = 0 and b.deleted = 0 and c.is_base = 1  and b.type = 2
+        <if test="name != null and name != ''">
+            and c.`name` like concat('%',#{name},'%')
+        </if>
+        group by c.id
+        order by ratio desc
+    </select>
+</mapper>

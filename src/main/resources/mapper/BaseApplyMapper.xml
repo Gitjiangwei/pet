@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.BaseApplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.BaseApply">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="base_name" property="baseName" />
+        <result column="name" property="name" />
+        <result column="mobile" property="mobile" />
+        <result column="base_wx" property="baseWx" />
+        <result column="faqi_name" property="faqiName" />
+        <result column="receive_name" property="receiveName" />
+        <result column="address" property="address" />
+        <result column="default_address" property="defaultAddress" />
+        <result column="content" property="content" />
+        <result column="images" property="images" />
+        <result column="card_image1" property="cardImage1" />
+        <result column="card_image2" property="cardImage2" />
+        <result column="card_image3" property="cardImage3" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, base_name, name, mobile, base_wx, faqi_name, receive_name, address, default_address, content, images, card_image1, card_image2, card_image3, create_time, update_time, deleted
+    </sql>
+
+</mapper>

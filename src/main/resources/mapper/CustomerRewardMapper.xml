@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CustomerRewardMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.CustomerReward">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="works_id" property="worksId" />
+        <result column="coin" property="coin" />
+        <result column="create_time" property="createTime" />
+        <result column="deleted" property="deleted" />
+        <result column="to_customer_id" property="toCustomerId" />
+        <result column="original_coin" property="originalCoin" />
+        <result column="to_original_coin" property="toOriginalCoin" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, works_id, coin, create_time, deleted, to_customer_id, original_coin, to_original_coin
+    </sql>
+    <select id="queryRewardDetailVos" resultType="com.ttm.pet.model.vo.app.RewardDetailVo">
+        select cr.id,cr.customer_id customerId,cr.coin,UNIX_TIMESTAMP(cr.create_time) createTime,c.`name`,c.portrait,cr.works_id worksId
+        from t_customer_reward cr
+        left join t_customer c on cr.customer_id = c.uuid
+        where cr.to_customer_id = #{customerId} and cr.deleted = 0
+        <if test="worksId != null and worksId != ''">
+            and cr.works_id = #{worksId}
+        </if>
+        order by cr.create_time desc
+    </select>
+
+</mapper>

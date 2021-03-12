@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CustomerDrawMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.CustomerDraw">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="factory_id" property="factoryId" />
+        <result column="draw_code" property="drawCode" />
+        <result column="match_id" property="matchId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="deleted" property="deleted" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, factory_id, draw_code, match_id, create_time, update_time, status, deleted, remark
+    </sql>
+    <select id="queryDrawCodeListVos" resultType="com.ttm.pet.model.vo.app.DrawCodeListVo">
+        select cd.id,f.`name`,c.portrait,f.gift_simple_name giftSimpleName,cd.draw_code drawCode,cd.`status`
+        from t_customer_draw cd
+        join t_factory f on cd.factory_id = f.id
+        join t_customer c on f.customer_id = c.uuid and c.deleted = 0
+        where cd.customer_id = #{customerId} and cd.deleted = 0 and cd.match_id = #{matchId}
+        order by cd. create_time desc
+    </select>
+
+</mapper>

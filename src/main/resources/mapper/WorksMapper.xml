@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.WorksMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Works">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="title" property="title"/>
+        <result column="first_img" property="firstImg"/>
+        <result column="content" property="content"/>
+        <result column="describe" property="describe"/>
+        <result column="p_x" property="pX"/>
+        <result column="p_y" property="pY"/>
+        <result column="is_recommend" property="isRecommend"/>
+        <result column="create_time" property="createTime"/>
+        <result column="is_match" property="isMatch"/>
+        <result column="deleted" property="deleted"/>
+        <result column="location" property="location"/>
+        <result column="type" property="type"/>
+        <result column="city_id" property="cityId"/>
+        <result column="point_num" property="pointNum"/>
+        <result column="is_top" property="isTop"/>
+        <result column="url_describe" property="urlDescribe"/>
+        <result column="url" property="url"/>
+        <result column="url_count" property="urlCount"/>
+        <result column="module_id" property="moduleId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, title, first_img, content, describe, p_x, p_y, is_recommend, create_time, is_match, deleted ,location, type, city_id, point_num, is_top, url_describe, url_count, url, module_id
+    </sql>
+    <insert id="inserts" parameterType="com.ttm.pet.model.dto.Works">
+        insert into t_works (customer_id,city_id, title, first_img, content,
+        `describe`, p_x, p_y, is_match, location, type
+        )
+        values (#{customerId}, #{cityId}, #{title}, #{firstImg}, #{content},
+        #{describe}, #{pX}, #{pY}, #{isMatch}, #{location}, #{type}
+        )
+   </insert>
+
+    <select id="queryRecommendWorks" resultType="com.ttm.pet.model.vo.app.WorksDetailVo">
+        select w.id,w.title,w.first_img firstImg,w.is_recommend isRecommend,w.content,w.deleted,w.p_x pX,w.p_y pY,UNIX_TIMESTAMP(w.create_time) createTime,w.`describe`,
+               w.location,w.type, w.customer_id customerId,c.`name` customerName,c.portrait,w.point_num pcnt,cc.replyCnt,cre.sumCoin,w.url_describe urlDescribe
+        <if test="customerId != null and customerId != ''">
+            ,IF(cp2.id IS NULL,0,1) isPoint,IF(cr.id IS NULL,0,1) isFans
+        </if>
+        from t_works w
+        join t_customer c on w.customer_id = c.uuid and c.deleted = 0
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE deleted = 0 GROUP BY works_id) cc ON w.id = cc.works_id
+        left join (SELECT works_id, sum(coin) sumCoin FROM t_customer_reward WHERE deleted = 0  GROUP BY works_id) cre ON w.id = cre.works_id
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_point cp2 on w.id = cp2.type_id and cp2.type = 1 and cp2.deleted = 0 and cp2.customer_id = #{customerId}
+            left join t_customer_relation cr on w.customer_id = cr.to_customer_id and cr.deleted = 0 and cr.from_customer_id = #{customerId}
+        </if>
+        where (w.deleted = 0 or w.deleted = 2) and c.is_mini != 1 and w.is_match != 1
+        GROUP BY w.id
+        HAVING w.point_num &gt;#{recommendPoint} or w.is_recommend = 1
+        ORDER BY createTime DESC
+    </select>
+
+    <select id="queryFansWorkOuterVos" resultType="com.ttm.pet.model.vo.app.WorksFansVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,w.content,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type,1 isFans,
+			 w.p_x pX,w.p_y pY,w.location,w.point_num pcnt,w.is_top isTop,cc.replyCnt,cre.sumCoin,IF(cp2.id IS NULL,0,1) isPoint,w.url_describe urlDescribe
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE deleted = 0 GROUP BY works_id) cc ON w.id = cc.works_id
+        left join (SELECT works_id, sum(coin) sumCoin FROM t_customer_reward WHERE deleted = 0  GROUP BY works_id) cre ON w.id = cre.works_id
+        left join t_customer_point cp2 on w.id = cp2.type_id and cp2.type = 1 and cp2.deleted = 0 and cp2.customer_id = #{customerId}
+        WHERE
+          (w.deleted = 0 or w.deleted = 2) AND w.is_match != 1
+		  AND (w.customer_id IN ( SELECT cr.to_customer_id FROM t_customer_relation cr WHERE cr.deleted = 0 AND cr.from_customer_id = #{customerId}) or w.is_top = 1)
+        ORDER BY
+	      w.is_top DESC,w.create_time DESC
+    </select>
+    <select id="queryCityWorkOuterVos" resultType="com.ttm.pet.model.vo.app.WorksCityIndexVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+               w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type,w.point_num pcnt,cc.replyCnt,cre.sumCoin,
+               ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{pX}*PI()/180-w.p_x*PI()/180)/2),2)+COS(#{pY}*PI()/180)*COS(w.p_x*PI()/180)*POW(SIN((w.p_y*PI()/180-w.p_y*PI()/180)/2),2)))*1000) AS distance,w.url_describe urlDescribe
+        <if test="customerId != null and customerId != ''">
+            ,IF(cp2.id IS NULL,0,1) isPoint,IF(cr.id IS NULL,0,1) isFans
+        </if>
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE deleted = 0 GROUP BY works_id) cc ON w.id = cc.works_id
+        left join (SELECT works_id, sum(coin) sumCoin FROM t_customer_reward WHERE deleted = 0  GROUP BY works_id) cre ON w.id = cre.works_id
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_point cp2 on w.id = cp2.type_id and cp2.type = 1 and cp2.deleted = 0 and cp2.customer_id = #{customerId}
+            left join t_customer_relation cr on w.customer_id = cr.to_customer_id and cr.deleted = 0 and cr.from_customer_id = #{customerId}
+        </if>
+        WHERE (w.deleted = 0 or w.deleted = 2) and c.is_mini != 1 and w.is_match != 1 and (w.city_id = #{cityId} or (c.is_partnership = 1 and w.location is not null))
+        ORDER BY w.create_time DESC
+    </select>
+    <select id="queryWorksNewIndexVos" resultType="com.ttm.pet.model.vo.app.WorksCityIndexVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+        w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type,w.point_num pcnt,cc.replyCnt,cre.sumCoin,w.url_describe urlDescribe
+        <if test="customerId != null and customerId != ''">
+            ,IF(cp2.id IS NULL,0,1) isPoint,IF(cr.id IS NULL,0,1) isFans
+        </if>
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE deleted = 0 GROUP BY works_id) cc ON w.id = cc.works_id
+        left join (SELECT works_id, sum(coin) sumCoin FROM t_customer_reward WHERE deleted = 0  GROUP BY works_id) cre ON w.id = cre.works_id
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_point cp2 on w.id = cp2.type_id and cp2.type = 1 and cp2.deleted = 0 and cp2.customer_id = #{customerId}
+            left join t_customer_relation cr on w.customer_id = cr.to_customer_id and cr.deleted = 0 and cr.from_customer_id = #{customerId}
+        </if>
+        WHERE (w.deleted = 0 or w.deleted = 2) and c.is_mini != 1 and w.is_match != 1
+        ORDER BY w.create_time DESC
+    </select>
+    <select id="queryWorksOtherCityVos" resultType="com.ttm.pet.model.vo.app.WorksCityIndexVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+        w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type,w.point_num pcnt,cc.replyCnt,cre.sumCoin,w.url_describe urlDescribe
+        <if test="customerId != null and customerId != ''">
+            ,IF(cp2.id IS NULL,0,1) isPoint,IF(cr.id IS NULL,0,1) isFans
+        </if>
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE deleted = 0 GROUP BY works_id) cc ON w.id = cc.works_id
+        left join (SELECT works_id, sum(coin) sumCoin FROM t_customer_reward WHERE deleted = 0  GROUP BY works_id) cre ON w.id = cre.works_id
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_point cp2 on w.id = cp2.type_id and cp2.type = 1 and cp2.deleted = 0 and cp2.customer_id = #{customerId}
+            left join t_customer_relation cr on w.customer_id = cr.to_customer_id and cr.deleted = 0 and cr.from_customer_id = #{customerId}
+        </if>
+        WHERE (w.deleted = 0 or w.deleted = 2) and c.is_mini != 1 and w.is_match != 1 and w.city_id != #{cityId} and c.is_partnership !=1
+        ORDER BY w.create_time DESC
+    </select>
+    <select id="queryModuleWorkVos" resultType="com.ttm.pet.model.vo.app.WorksOuterVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,w.content,w.first_img firstImg,w.`describe`,
+               UNIX_TIMESTAMP( w.create_time ) createTime,w.type,w.is_recommend isRecommend,w.point_num pcnt
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match != 1 and w.module_id = #{moduleId}
+        <if test="cityId != null and cityId != 0">
+            and w.city_id = #{cityId}
+        </if>
+        ORDER BY w.create_time DESC
+    </select>
+
+
+
+
+    <select id="queryMiniRecommendWorkVos" resultType="com.ttm.pet.model.vo.app.WorksOuterVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,w.content,w.first_img firstImg,w.`describe`,
+               UNIX_TIMESTAMP( w.create_time ) createTime,w.type,w.is_recommend isRecommend,w.point_num pcnt
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match != 1
+        GROUP BY w.id
+        HAVING w.point_num &gt;#{recommendPoint} OR w.is_recommend = 1
+        ORDER BY createTime DESC
+    </select>
+    <select id="queryMiniFansWorkOuterVos" resultType="com.ttm.pet.model.vo.app.WorksOuterVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,w.content,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type
+        FROM
+            t_works w JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE
+            (w.deleted = 0 or w.deleted = 2) AND w.is_match != 1
+            AND (w.customer_id IN ( SELECT cr.to_customer_id FROM t_customer_relation cr WHERE cr.deleted = 0 AND cr.from_customer_id = #{customerId})or w.is_top = 1)
+        ORDER BY
+	       w.is_top DESC,w.create_time DESC
+    </select>
+    <select id="queryMiniWorksOuterCityVos" resultType="com.ttm.pet.model.vo.app.WorksOuterCityVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+               w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type,
+               ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{pX}*PI()/180-w.p_x*PI()/180)/2),2)+COS(#{pY}*PI()/180)*COS(w.p_x*PI()/180)*POW(SIN((w.p_y*PI()/180-w.p_y*PI()/180)/2),2)))*1000) AS distance
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match != 1 and (w.city_id = #{cityId} or (c.is_partnership = 1 and w.location is not null))
+        ORDER BY w.create_time DESC
+    </select>
+    <select id="queryMiniWorksNewIndexVos" resultType="com.ttm.pet.model.vo.app.WorksOuterCityVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+               w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match != 1
+        ORDER BY w.create_time DESC
+    </select>
+    <select id="queryMiniWorksOtherCityVos" resultType="com.ttm.pet.model.vo.app.WorksOuterCityVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+               w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match != 1 and w.city_id != #{cityId} and c.is_partnership !=1
+        ORDER BY w.create_time DESC
+    </select>
+
+
+    <select id="queryMiniSupportWorksOuterCityVos" resultType="com.ttm.pet.model.vo.app.WorksOuterCityVo">
+        SELECT w.id,w.title,w.customer_id customerId,c.`name` customerName,c.portrait,c.is_partnership isPartnership,w.content,w.p_x pX,w.p_y pY,
+        w.city_id cityId,w.location,w.first_img firstImg,w.`describe`,UNIX_TIMESTAMP( w.create_time ) createTime,w.type
+        FROM t_works w
+        JOIN t_customer c ON w.customer_id = c.uuid AND c.deleted = 0
+        WHERE (w.deleted = 0 or w.deleted = 2) and w.is_match = #{type}
+        <if test="cityId != null and cityId != ''">
+            and w.city_id = #{cityId}
+        </if>
+        <if test="name != null and name != ''">
+            and (c.name like concat('%',#{name},'%') or c.pet_number = #{name})
+        </if>
+        ORDER BY w.create_time DESC
+    </select>
+
+    <select id="queryWorkDetailVo" resultType="com.ttm.pet.model.vo.app.WorksDetailVo">
+        select w.id,w.title,w.first_img firstImg,w.is_recommend isRecommend,w.content,w.deleted,w.p_x pX,w.p_y pY,UNIX_TIMESTAMP(w.create_time) createTime,w.`describe`,w.is_match isMatch,
+        w.location,w.type, w.customer_id customerId,c.`name` customerName,c.portrait,w.point_num pcnt,cc.replyCnt,cre.sumCoin,w.url_describe urlDescribe
+        <if test="customerId != null and customerId != ''">
+            ,IF(cr.id IS NULL,0,1) isFans
+        </if>
+        from t_works w
+        join t_customer c on w.customer_id = c.uuid and c.deleted = 0
+        left join (SELECT works_id,SUM(coin) sumCoin FROM t_customer_reward  WHERE works_id = #{worksId} AND deleted = 0 ) cre ON w.id = cre.works_id
+        left join (SELECT works_id, COUNT(id) replyCnt FROM t_customer_comment WHERE works_id = #{worksId} AND deleted = 0) cc ON w.id = cc.works_id
+        <if test="customerId != null and customerId != ''">
+            left join t_customer_relation cr on w.customer_id = cr.to_customer_id and cr.deleted = 0 and cr.from_customer_id = #{customerId}
+        </if>
+        where (w.deleted = 0 or w.deleted = 2) and w.id = #{worksId}
+    </select>
+    <select id="queryPersonalWorksVos" resultType="com.ttm.pet.model.vo.app.WorksPersonalVo">
+        select w.id,w.first_img firstImg,w.customer_id customerId,w.is_match isMatch
+        from t_works w
+        where (w.deleted = 0 or w.deleted = 2) and w.customer_id = #{customerId}
+        order by w.create_time desc
+    </select>
+    <select id="queryLoverWorksVos" resultType="com.ttm.pet.model.vo.app.WorksPersonalVo">
+        select w.id,w.first_img firstImg,w.customer_id customerId
+        from t_works w
+        join t_customer_point cp on w.id = cp.type_id and cp.type = 1 and cp.deleted = 0
+        where (w.deleted = 0 or w.deleted = 2) and cp.customer_id = #{customerId}
+        order by cp.create_time desc
+    </select>
+    <select id="queryRewardWorksVos" resultType="com.ttm.pet.model.vo.app.WorksPersonalVo">
+        select w.id,w.first_img firstImg,w.customer_id customerId
+        from t_works w
+        join (select id,works_id from t_customer_reward where deleted = 0 and customer_id = #{customerId} order by  create_time desc) t on t.works_id = w.id
+        where (w.deleted = 0 or w.deleted = 2)
+        group by w.id
+    </select>
+    <select id="queryAdoptWorksVos" resultType="com.ttm.pet.model.vo.app.WorksPersonalVo">
+        select w.id,w.first_img firstImg,w.customer_id customerId
+        from t_works w
+        join(select to_customer_id from t_customer_relation where from_customer_id = #{customerId} and deleted = 0 and is_adopt = 1) t on t.to_customer_id = w.customer_id
+        where (w.deleted = 0 or w.deleted = 2)
+               and w.id IN (SELECT MAX(id)FROM t_works where deleted = 0 GROUP BY customer_id)
+        order by w.create_time desc
+    </select>
+    <select id="queryPointWorksCount" resultType="java.lang.Integer">
+        select count(*) pointCount
+        from t_customer_point cp
+        join t_works w on cp.type_id = w.id and cp.type = 1 and (w.deleted = 0 or w.deleted = 2)
+        where cp.deleted = 0 and cp.type = 1 and cp.customer_id = #{customerId}
+    </select>
+
+
+    <select id="queryMatchCount" resultType="java.util.Map">
+        select IFNULL((sum(w.point_num)),0) sumPoint,count(w.id) matchCount
+        from t_works w
+        where w.is_match = 1 and deleted = 0
+    </select>
+    <select id="queryRankByCustomerId" resultType="java.util.Map">
+        SELECT b.rownum
+        FROM (
+        SELECT t.point_num,t.customer_id,@rownum := @rownum + 1 AS rownum
+        FROM
+            ( SELECT @rownum := 0 ) r,
+            ( SELECT w.id,w.customer_id,w.point_num FROM t_works w WHERE w.is_match = 1 AND w.deleted = 0 ORDER BY	w.point_num DESC ) AS t
+
+        ) b WHERE b.customer_id = #{customerId} limit 1
+    </select>
+    <select id="queryMatchWorksListVos" resultType="com.ttm.pet.model.vo.app.MatchWorksListVo">
+        select w.id,w.customer_id customerId,c.`name` customerName,c.portrait,w.first_img firstImg,w.point_num pcnt
+        <if test="customerId != null and customerId != ''">
+            ,IF(mp.id IS NULL,0,1) isPoint
+        </if>
+        from t_works w
+        join t_customer c on w.customer_id = c.uuid and c.deleted =0
+        <if test="customerId != null and customerId != ''">
+            left join t_match_point mp on w.id = mp.work_id and mp.deleted = 0 and to_days(mp.create_time) = to_days(now()) and mp.customer_id = #{customerId}
+        </if>
+        where w.is_match = 1 and (w.deleted = 0 or w.deleted=2)
+        ORDER BY w.point_num desc
+    </select>
+    <select id="queryMatchWorksListByNameVos" resultType="com.ttm.pet.model.vo.app.MatchWorksListVo">
+        select w.id,w.customer_id customerId,c.`name` customerName,c.portrait,w.first_img firstImg,w.point_num pcnt
+        <if test="customerId != null and customerId != ''">
+            ,IF(mp.id IS NULL,0,1) isPoint
+        </if>
+        from t_works w
+        join t_customer c on w.customer_id = c.uuid and c.deleted =0
+        <if test="customerId != null and customerId != ''">
+            left join t_match_point mp on w.id = mp.work_id and mp.deleted = 0 and to_days(mp.create_time) = to_days(now()) and mp.customer_id = #{customerId}
+        </if>
+        where w.is_match = 1 and w.deleted = 0 and c.`name` like CONCAT('%',#{keyword},'%')
+        ORDER BY w.point_num desc
+    </select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.ExhibitionCollectionMapper">
+
+    <!--新增收藏展位信息-->
+    <insert id="saveExhibitionCollection" >
+            INSERT INTO t_exhibition_collection (
+                boot_id,
+                customer_id,
+                company_nature,
+                product_category,
+                other_category,
+                booth_selection,
+                is_pay,
+                old_price,
+                collection_price,
+                remark,
+                create_date,
+                operate_date
+            )
+            VALUES
+                (
+                    #{bootId},
+                    #{customerId},
+                    #{companyNature},
+                    #{productCategory},
+                    #{otherCategory},
+                    #{boothSelection},
+                    '0',
+                    #{oldPrice},
+                    #{oldPrice},
+                    #{remark},
+                    NOW(),
+                    NOW()
+                )
+    </insert>
+
+    <!--获取收藏的展位信息列表-->
+    <select id="listExhibitionCollection" resultType="com.ttm.pet.model.vo.app.ExhibitionCollectionVo">
+        SELECT
+            t1.id,
+            t3.exhibition_title,
+            t2.booth_code,
+            t2.booth_size,
+            t3.exhibition_address,
+            t3.exhibition_start_time,
+            t3.exhibition_end_time,
+            t3.cover_image
+        FROM
+            t_exhibition_collection t1
+        LEFT JOIN t_exhibition_booth t2 ON t1.boot_id = t2.id
+        LEFT JOIN t_exhibition t3 ON t2.exhibition_id = t3.id
+        WHERE
+            t1.customer_id = #{customerId}
+    </select>
+
+    <!--获取收藏的展位信息详情-->
+    <select id="getExhibitionCollectDetail" resultType="com.ttm.pet.model.vo.app.ExhibitionCollectionDetailVo">
+        SELECT
+            t1.id,
+            t3.exhibition_title,
+            t2.booth_code,
+            t2.booth_size,
+            t1.old_price,
+            t1.collection_price,
+            t3.exhibition_address,
+            t3.exhibition_start_time,
+            t3.exhibition_end_time,
+            t3.customer_telephone1,
+            t3.customer_telephone2,
+            t1.remark,
+            t2.booth_status,
+            t1.company_nature,
+            t1.product_category,
+            t1.other_category,
+            t1.booth_selection
+        FROM
+            t_exhibition_collection t1
+        LEFT JOIN t_exhibition_booth t2 ON t1.boot_id = t2.id
+        LEFT JOIN t_exhibition t3 ON t2.exhibition_id = t3.id
+        WHERE
+            t1.id = #{collId}
+    </select>
+
+    <!--修改收藏的展位支付状态-->
+    <update id="updateBoothPayStatus">
+        UPDATE t_exhibition_collection
+        SET
+            is_pay = '1'
+        WHERE
+            boot_id = #{boothId} AND #{customerId}
+    </update>
+</mapper>

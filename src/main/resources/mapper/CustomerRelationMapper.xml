@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CustomerRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.CustomerRelation">
+        <id column="id" property="id" />
+        <result column="from_customer_id" property="fromCustomerId" />
+        <result column="to_customer_id" property="toCustomerId" />
+        <result column="relation_type" property="relationType" />
+        <result column="remark" property="remark" />
+        <result column="is_adopt" property="isAdopt" />
+        <result column="deleted" property="deleted" />
+        <result column="create_date" property="createDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, from_customer_id, to_customer_id, relation_type, remark, is_adopt, deleted, create_date
+    </sql>
+    <select id="queryAttentionList" resultType="com.ttm.pet.model.vo.app.FansVo">
+        select cr.id,c.uuid customerId,c.`name` customerName,c.portrait,case when cr2.id is null then 0 else 1 end isMutual
+        from t_customer_relation cr
+        join t_customer c on cr.to_customer_id = c.uuid and c.deleted = 0
+        left join t_customer_relation cr2 on cr.to_customer_id = cr2.from_customer_id and cr2.to_customer_id = #{customerId} and cr2.deleted = 0
+        where cr.from_customer_id = #{customerId} and cr.relation_type = 1 and cr.deleted = 0
+        order by cr.create_date desc
+    </select>
+    <select id="queryFansList" resultType="com.ttm.pet.model.vo.app.FansVo">
+        select cr.id,c.uuid customerId,c.`name` customerName,c.portrait,case when cr2.id is null then 0 else 1 end isMutual
+        from t_customer_relation cr
+        join t_customer c on cr.from_customer_id = c.uuid and c.deleted = 0
+        left join t_customer_relation cr2 on cr.from_customer_id = cr2.to_customer_id and cr2.from_customer_id = #{customerId} and cr2.deleted = 0
+        where cr.to_customer_id = #{customerId} and cr.relation_type = 1 and cr.deleted = 0
+        order by cr.create_date desc
+    </select>
+    <select id="queryAdoptListVo" resultType="com.ttm.pet.model.vo.app.AdoptListVo">
+        select cr.id,c.uuid customerId,c.`name` customerName,c.portrait,UNIX_TIMESTAMP(w.create_time) lastWorkTime
+        from t_customer_relation cr
+        join t_customer c on cr.to_customer_id = c.uuid and c.deleted = 0
+        left join (SELECT id, create_time,customer_id FROM t_works WHERE id IN (SELECT MAX(id)FROM t_works where deleted = 0 GROUP BY customer_id)) w on c.uuid = w.customer_id
+        where  cr.from_customer_id = #{customerId} and cr.is_adopt = 1 and cr.deleted = 0
+        order by lastWorkTime asc
+    </select>
+</mapper>

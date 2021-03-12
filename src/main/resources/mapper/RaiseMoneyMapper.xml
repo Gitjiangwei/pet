@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.RaiseMoneyMapper">
+    <!--查询筹钱详情-->
+    <select id="getRaiseMoney" resultType="com.ttm.pet.model.vo.app.RaiseMoneyVo">
+        SELECT
+            c.uuid customerId,
+            c.`name`,
+            c.portrait,
+            b.images,
+            b.content,
+            b.extra,
+            b.goods_img goodsImg,
+            b.goods_price goodsPrice,
+            b.share_title shareTitle,
+            b.share_img shareImg,
+            b.subsidy,
+            b.target,
+            b.address,
+            b.remark,
+            count(go.id) supporterNum,
+            IFNULL(sum(go.weight), 0) bought,
+            b.faqi_name faqiName,
+            b.receive_name receiveName,
+            b.id,
+            b.finish_start_money_time,
+            b.finish_money_time
+        FROM
+            t_customer c
+        JOIN t_base b ON c.uuid = b.customer_id
+        LEFT JOIN t_goods_order go ON c.uuid = go.base_customer_id
+        AND go.`status` = 2
+        AND go.deleted = 0
+        AND go.type = 2
+        WHERE
+            c.deleted = 0
+            AND b.deleted = 0
+            AND c.is_base = 1
+            AND b.type = 2
+            AND b.id = #{customerId}
+    </select>
+</mapper>

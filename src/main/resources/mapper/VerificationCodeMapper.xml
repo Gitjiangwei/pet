@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.VerificationCodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.VerificationCode">
+        <id column="id" property="id" />
+        <result column="mobile" property="mobile" />
+        <result column="code" property="code" />
+        <result column="type" property="type" />
+        <result column="create_date" property="createDate" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, mobile, code, type, create_date, deleted
+    </sql>
+
+    <select id="queryVerificationCodes" resultType="com.ttm.pet.model.vo.app.VerificationCodeVo">
+       select a.*, if(date_add(a.create_date, interval 2 minute) &gt; now(),1,0) as ct
+       from t_verification_code a where mobile = #{phoneNum} and type = #{type}
+       and date_add(a.create_date, interval 10 minute) &gt; now() order by create_date desc
+    </select>
+</mapper>

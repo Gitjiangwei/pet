@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CommunityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Community">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="content" property="content" />
+        <result column="images" property="images" />
+        <result column="city_id" property="cityId" />
+        <result column="is_country" property="isCountry" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, content, images, city_id, is_country, deleted, create_time
+    </sql>
+    <select id="queryCommunityListVos" resultType="com.ttm.pet.model.vo.app.CommunityListVo">
+        select com.id,com.customer_id customerId,c.`name` customerName,c.portrait,com.content,com.images,com.city_id cityId,UNIX_TIMESTAMP(com.create_time) createTime
+        from t_community com
+        join t_customer c on com.customer_id = c.uuid
+        where com.deleted = 0 and c.deleted = 0
+        <choose>
+            <when test="cityId != null and cityId == 0 " >
+                and com.is_country = 1
+            </when>
+            <otherwise>
+                and com.city_id = #{cityId}
+            </otherwise>
+        </choose>
+        order by com.create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.CityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.City">
+        <id column="id" property="id" />
+        <result column="city" property="city" />
+        <result column="province_id" property="provinceId" />
+        <result column="adopted_rotation" property="adoptedRotation" />
+        <result column="support_rotation" property="supportRotation" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, city, province_id, adopted_rotation,support_rotation deleted
+    </sql>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttm.pet.dao.MessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ttm.pet.model.dto.Message">
+        <id column="id" property="id" />
+        <result column="portrait" property="portrait" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="to_customer_id" property="toCustomerId" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="type" property="type" />
+        <result column="draw_url" property="drawUrl" />
+        <result column="draw_img" property="drawimg" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, portrait, title, content, to_customer_id, deleted, create_time, type, draw_url, draw_img
+    </sql>
+    <select id="queryMessageListVos" resultType="com.ttm.pet.model.vo.app.MessageListVo">
+        SELECT
+            id,
+            portrait,
+            title,
+            LEFT(content,25) content,
+            type,
+            UNIX_TIMESTAMP(create_time) createTime,
+            draw_img drawImg,
+            draw_url drawUrl
+        FROM
+            t_message
+        WHERE
+            deleted=0
+            AND (
+                to_customer_id IS NULL
+                OR to_customer_id = #{customerId}
+            )
+        <if test="deletedMessageId != null and deletedMessageId.size() > 0">
+            AND id not in
+            <foreach item="item" index="index" collection="deletedMessageId" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY
+            create_time DESC
+    </select>
+
+</mapper>

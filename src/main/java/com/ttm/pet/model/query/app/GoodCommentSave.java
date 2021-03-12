@@ -27,10 +27,10 @@ public class GoodCommentSave implements Serializable {
     private String customerId;
 
     /**
-     * 订单id
+     * 基地id
      */
-    @ApiModelProperty(value = "订单id", required = true)
-    @NotNull(message = "订单id不能为空")
+    @ApiModelProperty(value = "基地id", required = true)
+    @NotNull(message = "基地id不能为空")
     private Long goodId;
 
     /**

@@ -32,4 +32,14 @@ public interface GoodCommentService {
      * @date 2021/3/4
      */
     ListDataResult listGoodComment(GoodCommentQuery goodCommentQuery);
+
+    /**
+     * 删除评论
+     *
+     * @param id 删除参数
+     * @return 删除成功标记
+     * @author J
+     * @date 2021/3/13
+     */
+    DataResult deleteGoodComment(Long id);
 }

@@ -1,5 +1,6 @@
 package com.ttm.pet.controller.app;
 
+import com.ttm.pet.model.dto.DeleteExhibitionCollectionParam;
 import com.ttm.pet.model.dto.ExhibitionCollection;
 import com.ttm.pet.model.pojo.DataResult;
 import com.ttm.pet.model.pojo.ListDataResult;
@@ -50,6 +51,13 @@ public class ExhibitionController {
     @PostMapping("/saveExhibitionCollection")
     public DataResult saveExhibitionCollection(@RequestBody @Valid ExhibitionCollection exhibitionCollection) {
         return exhibitionService.saveExhibitionCollection(exhibitionCollection);
+    }
+
+    @ApiOperation(httpMethod = "POST", value = "取消收藏，可用于批量")
+    @PostMapping("/clearExhibitionCollection")
+    public DataResult clearExhibitionCollection(
+            @RequestBody @Valid DeleteExhibitionCollectionParam deleteExhibitionCollectionParam) {
+        return exhibitionService.deleteExhibitionCollection(deleteExhibitionCollectionParam);
     }
 
     @ApiOperation(httpMethod = "GET", value = "获取展位收藏列表")

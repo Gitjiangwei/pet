@@ -1,10 +1,13 @@
 package com.ttm.pet.service.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.google.common.collect.Lists;
 import com.ttm.pet.dao.ExhibitionBoothMapper;
 import com.ttm.pet.dao.ExhibitionBoothPayMapper;
 import com.ttm.pet.dao.ExhibitionCollectionMapper;
 import com.ttm.pet.dao.ExhibitionMapper;
+import com.ttm.pet.enums.ReturnStatusEnum;
+import com.ttm.pet.model.dto.DeleteExhibitionCollectionParam;
 import com.ttm.pet.model.dto.ExhibitionBoothPay;
 import com.ttm.pet.model.dto.ExhibitionCollection;
 import com.ttm.pet.model.pojo.DataResult;
@@ -17,6 +20,8 @@ import com.ttm.pet.service.ExhibitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -61,9 +66,21 @@ public class ExhibitionServiceImpl implements ExhibitionService {
 
     @Override
     public DataResult saveExhibitionCollection(ExhibitionCollection exhibitionCollection) {
-        DataResult dataResult = new DataResult();
         exhibitionCollectionMapper.saveExhibitionCollection(exhibitionCollection);
+        DataResult dataResult = new DataResult();
+        dataResult.setCode(ReturnStatusEnum.SUCCESS.getValue());
+        dataResult.setMsg("收藏成功");
         return dataResult;
+    }
+
+    @Override
+    public DataResult deleteExhibitionCollection(DeleteExhibitionCollectionParam deleteExhibitionCollectionParam) {
+        List< String > collIdList = new ArrayList<>(Arrays.asList(deleteExhibitionCollectionParam.getCollIds()));
+        exhibitionCollectionMapper.deleteExhibitionCollection(collIdList);
+        DataResult dataResult = new DataResult();
+        dataResult.setCode(ReturnStatusEnum.SUCCESS.getValue());
+        dataResult.setMsg("取消收藏成功");
+        return null;
     }
 
     @Override

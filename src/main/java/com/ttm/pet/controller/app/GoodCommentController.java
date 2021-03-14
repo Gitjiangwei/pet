@@ -7,10 +7,12 @@ import com.ttm.pet.model.query.app.GoodCommentSave;
 import com.ttm.pet.service.GoodCommentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -57,5 +59,19 @@ public class GoodCommentController {
     @PostMapping("/queryGoodComment")
     public ListDataResult queryGoodComment(@RequestBody @Valid GoodCommentQuery goodCommentQuery) {
         return goodCommentService.listGoodComment(goodCommentQuery);
+    }
+
+    /**
+     * 删除评论
+     *
+     * @param id 删除参数
+     * @return 删除成功标记
+     * @author J
+     * @date 2021/3/13
+     */
+    @ApiOperation(httpMethod = "POST", value = "删除评论")
+    @PostMapping("/deleteGoodComment")
+    public DataResult deleteGoodComment(@ApiParam(value = "主键id", required = true) @RequestParam("id") Long id) {
+        return goodCommentService.deleteGoodComment(id);
     }
 }

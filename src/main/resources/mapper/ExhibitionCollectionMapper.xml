@@ -53,7 +53,14 @@
         WHERE
             t1.customer_id = #{customerId}
     </select>
-
+    <!--删除输出信息-->
+    <delete id="deleteExhibitionCollection">
+        DELETE FROM t_exhibition_collection
+        WHERE id IN
+        <foreach collection="collIdList" item="collId" open="(" close=")" separator=",">
+            #{collId}
+        </foreach>
+    </delete>
     <!--获取收藏的展位信息详情-->
     <select id="getExhibitionCollectDetail" resultType="com.ttm.pet.model.vo.app.ExhibitionCollectionDetailVo">
         SELECT

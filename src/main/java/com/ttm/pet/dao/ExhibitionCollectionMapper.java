@@ -6,6 +6,7 @@ import com.ttm.pet.model.vo.app.ExhibitionCollectionVo;
 import com.ttm.pet.model.vo.app.ExhibitionPayVo;
 import org.apache.ibatis.annotations.Param;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -27,6 +28,16 @@ public interface ExhibitionCollectionMapper {
     Integer saveExhibitionCollection(ExhibitionCollection exhibitionCollection);
 
     /**
+     * 删除收藏的数据
+     *
+     * @param collIdList 删除参数
+     * @return 删除成功返回的行数
+     * @author J
+     * @date 2021/3/14
+     */
+    Integer deleteExhibitionCollection(@Param("collIdList") List< String > collIdList);
+
+    /**
      * 获取收藏的展位信息列表
      *
      * @param customerId 检索条件
@@ -35,14 +46,14 @@ public interface ExhibitionCollectionMapper {
      * @date 2021/3/9
      */
     List< ExhibitionCollectionVo > listExhibitionCollection(@Param("customerId") String customerId);
-    
+
     /**
      * 获取收藏的展位信息详情
      *
      * @param collId 检索条件
      * @return 收藏的展位信息详情
      * @author J
-     * @date 2021/3/9 
+     * @date 2021/3/9
      */
     ExhibitionCollectionDetailVo getExhibitionCollectDetail(@Param("collId") Long collId);
 

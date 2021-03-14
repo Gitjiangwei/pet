@@ -1,5 +1,6 @@
 package com.ttm.pet.service;
 
+import com.ttm.pet.model.dto.DeleteExhibitionCollectionParam;
 import com.ttm.pet.model.dto.ExhibitionCollection;
 import com.ttm.pet.model.pojo.DataResult;
 import com.ttm.pet.model.pojo.ListDataResult;
@@ -21,6 +22,16 @@ public interface ExhibitionService {
      * @date 2021/3/9
      */
     DataResult saveExhibitionCollection(ExhibitionCollection exhibitionCollection);
+
+    /**
+     * 删除收藏信息
+     *
+     * @param deleteExhibitionCollectionParam 删除参数
+     * @return 删除成功标记
+     * @author J
+     * @date 2021/3/15
+     */
+    DataResult deleteExhibitionCollection(DeleteExhibitionCollectionParam deleteExhibitionCollectionParam);
 
     /**
      * 获取收藏的展位信息列表

@@ -67,4 +67,13 @@ public class GoodCommentServiceImpl implements GoodCommentService {
         result.setData(commentVoPage.getRecords());
         return result;
     }
+
+    @Override
+    public DataResult deleteGoodComment(Long id) {
+        goodCommentMapper.deleteGoodComment(id);
+        DataResult dataResult = new DataResult();
+        dataResult.setCode(ReturnStatusEnum.SUCCESS.getValue());
+        dataResult.setMsg("删除成功");
+        return dataResult;
+    }
 }

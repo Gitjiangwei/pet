@@ -31,8 +31,18 @@ public interface GoodCommentMapper {
      * @param goodCommentQuery 检索条件
      * @param page 分页
      * @return 订单的评论列表
-     * @author 姜伟
+     * @author J
      * @date 2021/3/4
      */
     List< GoodCommentVo > listGoodComment(Page< GoodCommentVo > page, GoodCommentQuery goodCommentQuery);
+
+    /**
+     * 删除评论
+     *
+     * @param id 删除参数
+     * @return 删除成功返回的行数
+     * @author J
+     * @date 2021/3/13
+     */
+    Integer deleteGoodComment(Long id);
 }

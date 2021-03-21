@@ -18,6 +18,7 @@ public class BaseDetailMoneyVo {
     private String faqiName;
     private String receiveName;
     private Integer id;
+    private String goodsImg;
 
     private BigDecimal targetMoney;
     private String finishMoneyTime;
@@ -184,5 +185,13 @@ public class BaseDetailMoneyVo {
 
     public void setRatio(String ratio) {
         this.ratio = ratio;
+    }
+
+    public String getGoodsImg() {
+        return goodsImg;
+    }
+
+    public void setGoodsImg(String goodsImg) {
+        this.goodsImg = goodsImg;
     }
 }

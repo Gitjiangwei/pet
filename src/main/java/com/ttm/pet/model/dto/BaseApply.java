@@ -72,6 +72,11 @@ public class BaseApply extends Model<BaseApply> {
     @TableLogic
     private Integer deleted;
 
+    /**
+     * 基地类型 1：筹粮 2：筹钱
+     */
+    private Integer baseType;
+
 
     public Integer getId() {
         return id;
@@ -244,5 +249,13 @@ public class BaseApply extends Model<BaseApply> {
         ", updateTime=" + updateTime +
         ", deleted=" + deleted +
         "}";
+    }
+
+    public Integer getBaseType() {
+        return baseType;
+    }
+
+    public void setBaseType(Integer baseType) {
+        this.baseType = baseType;
     }
 }

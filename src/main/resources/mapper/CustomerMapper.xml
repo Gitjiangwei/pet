@@ -101,10 +101,10 @@
     </select>
 
     <select id="queryModuleCustomerVos" resultType="com.ttm.pet.model.vo.app.CustomerLeleVo">
-        select c.uuid customerId,c.`name` customerName ,c.portrait
-        from t_customer c,
-        (select customer_ids from t_module where id = #{moduleId} and deleted = 0) a
-        where c.deleted = 0 and FIND_IN_SET( c.id , a.customer_ids)
-        order by FIND_IN_SET( c.id , a.customer_ids)
+        select t2.uuid as 'customerId',t2.name as 'customerName',t2.portrait
+        from t_customer_module t1
+        left join t_customer t2 on t1.customer_id = t2.id
+        where t1.module_id = #{moduleId}
+        order by t1.sort
     </select>
 </mapper>

@@ -45,7 +45,7 @@
     </select>
 
     <select id="queryBaseDetailMoneyVo" resultType="com.ttm.pet.model.vo.app.BaseDetailMoneyVo">
-       select c.uuid customerId,c.`name`,c.portrait,b.images,b.content,b.extra,b.share_title shareTitle,b.share_img shareImg,b.target_money targetMoney,b.money_finished moneyFinished,b.finish_money_time finishMoneyTimes,
+       select c.uuid customerId,c.`name`,c.portrait,b.goods_img,b.images,b.content,b.extra,b.share_title shareTitle,b.share_img shareImg,b.target_money targetMoney,b.money_finished moneyFinished,b.finish_money_time finishMoneyTimes,
 			 b.address,b.remark,count(go.id) supporterNum,IFNULL(sum( go.weight ),0) bought,b.faqi_name faqiName,b.receive_name receiveName,b.id,IFNULL(sum( go.price ),0) sumMoney
        from t_customer c
        join t_base b on c.uuid = b.customer_id

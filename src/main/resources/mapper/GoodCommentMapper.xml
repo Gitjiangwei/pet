@@ -36,6 +36,7 @@
         WHERE
             t1.base_id = #{goodId}
             AND t1.deleted = '0'
+            AND t1.comment_status = '1'
         ORDER BY
             t1.create_date DESC
     </select>

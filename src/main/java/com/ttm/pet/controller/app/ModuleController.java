@@ -62,7 +62,7 @@ public class ModuleController {
     private DataResult getModules() {
         DataResult result = new DataResult();
         try {
-            List< Module > modules = moduleService.selectList(new EntityWrapper< Module >().eq("isValid", 1));
+            List<Module> modules = moduleService.selectList(new EntityWrapper<Module>().eq("isValid",1).orderBy("module_number",true));
             result.setData(modules);
             return result;
         }

@@ -33,6 +33,27 @@ public class Module extends Model<Module> {
     private Integer deleted;
     private String bannerImg;
 
+    private String customerIds;
+
+    private String moduleNumber;
+
+    public String getCustomerIds() {
+        return customerIds;
+    }
+
+    public void setCustomerIds(String customerIds) {
+        this.customerIds = customerIds;
+    }
+
+    public String getModuleNumber() {
+        return moduleNumber;
+    }
+
+    public void setModuleNumber(String moduleNumber) {
+        this.moduleNumber = moduleNumber;
+    }
+
+
 
     public Integer getId() {
         return id;
@@ -87,6 +108,8 @@ public class Module extends Model<Module> {
         ", isValid=" + isValid +
         ", deleted=" + deleted +
         ", bannerImg=" + bannerImg +
+        ", customerIds=" + customerIds +
+        ", moduleNumber=" + moduleNumber +
         "}";
     }
 }

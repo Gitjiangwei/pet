@@ -3,8 +3,8 @@ server:
     context-path: /pet
   port: 8081
   ssl:
-    key-store: classpath:3803281_zglele.com.pfx
-    key-store-password: Pw50b6rg
+    key-store: classpath:4605699_pet.zglele.com.pfx
+    key-store-password: 6yNh99o9
     key-store-type: PKCS12
 
 

@@ -60,6 +60,9 @@ public class GoodCommentServiceImpl implements GoodCommentService {
     @Override
     public ListDataResult listGoodComment(GoodCommentQuery goodCommentQuery) {
         Page< GoodCommentVo > commentVoPage = new Page<>(goodCommentQuery.getPageNo(), goodCommentQuery.getPageSize());
+        if (goodCommentQuery.getParentId() == null){
+            goodCommentQuery.setParentId(0L);
+        }
         commentVoPage.setRecords(goodCommentMapper.listGoodComment(commentVoPage, goodCommentQuery));
         ListDataResult result = new ListDataResult();
         result.setCurrent(commentVoPage.getCurrent());

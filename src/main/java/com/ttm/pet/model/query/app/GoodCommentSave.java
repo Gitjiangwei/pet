@@ -26,6 +26,10 @@ public class GoodCommentSave implements Serializable {
     @ApiModelProperty("用户id")
     private String customerId;
 
+    @ApiModelProperty(value = "父级id", required = true, example = "最顶层为0，其余为主键id")
+    @NotNull(message = "父级id不能为空")
+    private Long parentId;
+
     /**
      * 基地id
      */

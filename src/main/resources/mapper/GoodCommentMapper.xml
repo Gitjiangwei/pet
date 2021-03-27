@@ -9,7 +9,8 @@
             remark,
             comment_status,
             create_date,
-            operate_date
+            operate_date,
+            parent_id
         )
         VALUES (
             #{customerId},
@@ -17,7 +18,8 @@
             #{remark},
             1,
             NOW(),
-            NOW()
+            NOW(),
+            #{parentId}
         )
     </insert>
 
@@ -35,6 +37,7 @@
         LEFT JOIN t_customer t2 ON t1.customer_id = t2.uuid
         WHERE
             t1.base_id = #{goodId}
+            AND t1.parent_id = #{parentId}
             AND t1.deleted = '0'
             AND t1.comment_status = '1'
         ORDER BY

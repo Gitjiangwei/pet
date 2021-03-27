@@ -2,6 +2,7 @@ package com.ttm.pet.model.query.app;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @author J
  * @date 2021/3/4
  */
+@Data
 @ApiModel("添加评论实体")
 public class GoodCommentSave implements Serializable {
     /**
@@ -26,6 +28,9 @@ public class GoodCommentSave implements Serializable {
     @ApiModelProperty("用户id")
     private String customerId;
 
+    /**
+     * 父级ID
+     */
     @ApiModelProperty(value = "父级id", required = true, example = "最顶层为0，其余为主键id")
     @NotNull(message = "父级id不能为空")
     private Long parentId;
@@ -43,36 +48,4 @@ public class GoodCommentSave implements Serializable {
     @ApiModelProperty(value = "评论内容", required = true)
     @NotBlank(message = "评论内容不能为空")
     private String remark;
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Long getGoodId() {
-        return goodId;
-    }
-
-    public void setGoodId(Long goodId) {
-        this.goodId = goodId;
-    }
-
-    public String getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

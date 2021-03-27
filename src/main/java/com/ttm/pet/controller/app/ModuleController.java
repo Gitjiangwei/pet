@@ -9,10 +9,7 @@ import com.ttm.pet.model.pojo.ListDataResult;
 import com.ttm.pet.model.query.app.BusinessQuery;
 import com.ttm.pet.model.vo.app.CustomerLeleVo;
 import com.ttm.pet.model.vo.app.WorksOuterVo;
-import com.ttm.pet.service.BusinessService;
-import com.ttm.pet.service.CustomerService;
-import com.ttm.pet.service.ModuleService;
-import com.ttm.pet.service.WorksService;
+import com.ttm.pet.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -51,6 +48,9 @@ public class ModuleController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private ConfigService configService;
 
     /**
      * 查询有效的模块
@@ -182,4 +182,27 @@ public class ModuleController {
         }
     }
 
+    /**
+     * 查询企业会员每年价格
+     * @param
+     * @return
+     */
+    @ApiOperation(httpMethod = "GET", value = "查询企业会员每年价格", nickname = "4")
+    @RequestMapping(value = "/vipPrice", method = RequestMethod.GET)
+    private DataResult getVipPrice() {
+        DataResult result = new DataResult();
+        try {
+            Config vipYearMoney = configService.selectById(7);
+            Map<String,Object> map = new HashMap<>(1);
+            map.put("price",vipYearMoney.getValue());
+            result.setData(map);
+            return result;
+        }
+        catch (Exception e) {
+            logger.error("查询企业会员每年价格:{}", e.getMessage());
+            result.setCode(ReturnStatusEnum.SYS_ERROR.getValue());
+            result.setMsg("查询失败");
+            return result;
+        }
+    }
 }

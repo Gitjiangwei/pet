@@ -13,6 +13,7 @@ import com.ttm.pet.model.pojo.ListDataResult;
 import com.ttm.pet.model.query.app.*;
 import com.ttm.pet.model.vo.app.*;
 import com.ttm.pet.service.*;
+import com.ttm.pet.util.DateUtil;
 import com.ttm.pet.util.NumberUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -212,6 +213,12 @@ public class CustomerApiController {
                 }
             }
             BeanUtils.copyProperties(customer,customerVo);
+            if (customer.getVipStartTime() != null){
+                customerVo.setVipStartTime(DateUtil.date2long(customer.getVipStartTime()));
+            }
+            if (customer.getVipEndTime() != null){
+                customerVo.setVipEndTime(DateUtil.date2long(customer.getVipEndTime()));
+            }
             //查询粉丝数和关注数
             int attentionCount = customerRelationService.selectCount(new EntityWrapper<CustomerRelation>()
                     .eq("from_customer_id",customer.getUuid())
@@ -518,6 +525,12 @@ public class CustomerApiController {
             }else {
                 CustomerVo customerVo = new CustomerVo();
                 BeanUtils.copyProperties(customer,customerVo);
+                if (customer.getVipStartTime() != null){
+                    customerVo.setVipStartTime(DateUtil.date2long(customer.getVipStartTime()));
+                }
+                if (customer.getVipEndTime() != null){
+                    customerVo.setVipEndTime(DateUtil.date2long(customer.getVipEndTime()));
+                }
                 //查询粉丝数和关注数
                 int attentionCount = customerRelationService.selectCount(new EntityWrapper<CustomerRelation>()
                         .eq("from_customer_id",customer.getUuid())
@@ -801,7 +814,7 @@ public class CustomerApiController {
             map.put("isShowMobile",customer.getIsShowMobile());
             map.put("isShowWx",customer.getIsShowWx());
             map.put("businessName",customer.getBusinessName());
-            map.put("vipEndTime",customer.getVipEndTime());
+            map.put("vipEndTime",customer.getVipEndTime() == null ? null : DateUtil.date2long(customer.getVipEndTime()));
             if(customer.getIsShowMobile() == 1){
                 map.put("mobile",customer.getMobile());
             }

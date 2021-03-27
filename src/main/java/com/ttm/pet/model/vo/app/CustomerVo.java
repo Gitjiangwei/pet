@@ -82,8 +82,8 @@ public class CustomerVo{
     private String identityToken;
 
     private String businessName;
-    private Date vipStartTime;
-    private Date vipEndTime;
+    private Long vipStartTime;
+    private Long vipEndTime;
 
     public String getUuid() {
         return uuid;
@@ -389,19 +389,19 @@ public class CustomerVo{
         this.businessName = businessName;
     }
 
-    public Date getVipStartTime() {
+    public Long getVipStartTime() {
         return vipStartTime;
     }
 
-    public void setVipStartTime(Date vipStartTime) {
+    public void setVipStartTime(Long vipStartTime) {
         this.vipStartTime = vipStartTime;
     }
 
-    public Date getVipEndTime() {
+    public Long getVipEndTime() {
         return vipEndTime;
     }
 
-    public void setVipEndTime(Date vipEndTime) {
+    public void setVipEndTime(Long vipEndTime) {
         this.vipEndTime = vipEndTime;
     }
 }

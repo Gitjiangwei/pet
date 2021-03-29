@@ -92,7 +92,7 @@ public class WorksController {
                 }
             }
             BeanUtils.copyProperties(worksQuery,works);
-            worksService.inserts(works);
+            worksService.insert(works);
             return result;
         } catch (Exception e) {
             logger.error("作品发布失败:{}", e);

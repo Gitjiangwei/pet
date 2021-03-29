@@ -43,7 +43,7 @@ public class BaseServiceImpl extends ServiceImpl< CustomerBaseMapper, Base > imp
         //目标款
         BigDecimal targetMoney  = new BigDecimal(String.valueOf(baseDetailMoneyVo.getTargetMoney()));
         //百分比
-        BigDecimal ratio = sumMoney.divide(targetMoney);
+        BigDecimal ratio = sumMoney.divide(targetMoney,10,BigDecimal.ROUND_UP);
         baseDetailMoneyVo.setRatio(ratio.toString());
         return baseDetailMoneyVo;
     }
